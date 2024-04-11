@@ -77,6 +77,9 @@ namespace pydeepstream {
                        pydsdoc::nvmeta::MetaTypeDoc::NVDS_START_USER_META)
                 .value("NVDS_FORCE32_META", NVDS_FORCE32_META,
                        pydsdoc::nvmeta::MetaTypeDoc::NVDS_FORCE32_META)
+                       /*adding field for reid*/
+                .value("NVDS_TRACKER_BATCH_REID_META", NVDS_TRACKER_BATCH_REID_META, pydsdoc::nvmeta::MetaTypeDoc::NVDS_TRACKER_BATCH_REID_META)
+                .value("NVDS_TRACKER_OBJ_REID_META", NVDS_TRACKER_OBJ_REID_META, pydsdoc::nvmeta::MetaTypeDoc::NVDS_TRACKER_OBJ_REID_META)
                 .export_values();
 
 

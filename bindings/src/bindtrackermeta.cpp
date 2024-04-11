@@ -115,6 +115,28 @@ namespace pydeepstream {
                      py::keep_alive<0, 1>(), py::return_value_policy::reference,
                      pydsdoc::trackerdoc::NvDsTargetMiscDataBatchDoc::list);
 
+
+        py::class_<NvDsReidTensorBatch>(m, "NvDsReidTensorBatch", pydsdoc::trackerdoc::NvDsReidTensorBatchDoc::descr)
+                .def(py::init<>())
+                .def_readwrite("featureSize", &NvDsReidTensorBatch::featureSize, pydsdoc::trackerdoc::NvDsReidTensorBatchDoc::featureSize)
+                .def_readwrite("numFilled", &NvDsReidTensorBatch::numFilled, pydsdoc::trackerdoc::NvDsReidTensorBatchDoc::numFilled)
+                // .def_readwrite("ptr_host", &NvDsReidTensorBatch::ptr_host, pydsdoc::trackerdoc::NvDsReidTensorBatchDoc::ptr_host)
+                .def_readwrite("ptr_dev", &NvDsReidTensorBatch::ptr_dev, pydsdoc::trackerdoc::NvDsReidTensorBatchDoc::ptr_dev)
+                .def_readwrite("priv_data", &NvDsReidTensorBatch::priv_data, pydsdoc::trackerdoc::NvDsReidTensorBatchDoc::priv_data)
+                .def("cast",
+                     [](void *data) {
+                         return (NvDsReidTensorBatch *) data;
+                     },
+                     py::return_value_policy::reference,
+                     pydsdoc::trackerdoc::NvDsReidTensorBatchDoc::cast)
+                .def_property_readonly("ptr_host",
+                    [](const NvDsReidTensorBatch &self) -> py::array_t<float> {
+                        return py::array_t<float>(
+                            {self.numFilled, self.featureSize}, // Using [numFilled x featureSize] format
+                            self.ptr_host
+                        );
+                    }
+                );
     }
 
 }

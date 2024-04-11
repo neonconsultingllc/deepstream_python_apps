@@ -81,6 +81,90 @@ namespace pydsdoc
 
             constexpr const char* cast=R"pyds(cast given object/data to :class:`NvDsTargetMiscDataFrame`, call pyds.NvDsTargetMiscDataFrame.cast(data))pyds";
         }
+        namespace NvDsReidTensorBatchDoc 
+        {
+            static constexpr char* descr = R"doc(
+                ReID tensor of the batch.
+
+                Example Usage:
+                ::
+
+                gst_buffer = info.get_buffer()
+                if not gst_buffer:
+                    print("Unable to get GstBuffer ")
+                    return
+                batch_meta = pyds.gst_buffer_get_nvds_batch_meta(hash(gst_buffer))
+
+                l_batch_user=batch_meta.batch_user_meta_list #
+                while l_batch_user is not None:
+                    try:
+                        user_meta= pyds.NvDsUserMeta.cast(l_batch_user.data)
+                    except StopIteration:
+                        break
+                    if user_meta and user_meta.base_meta.meta_type == pyds.NVDS_TRACKER_BATCH_REID_META:
+                        pReidTensor = pyds.NvDsReidTensorBatch.cast(user_meta.user_meta_data)
+                    try:
+                        l_batch_user=l_batch_user.next
+                    except StopIteration:
+                        break
+                
+                
+                l_frame = batch_meta.frame_meta_list
+                while l_frame is not None:
+                    try:
+                        frame_meta = pyds.NvDsFrameMeta.cast(l_frame.data)
+                    except StopIteration:
+                        break
+                
+                    if not pReidTensor:
+                        continue
+
+                    l_obj = frame_meta.obj_meta_list
+                    while l_obj is not None:
+                        try:
+                            obj = pyds.NvDsObjectMeta.cast(l_obj.data)
+                        except StopIteration:
+                            break
+                        id = obj.object_id
+                        l_obj_user = obj.obj_user_meta_list
+                        obj_user_meta = pyds.NvDsUserMeta.cast(l_obj_user.data)
+                        if obj_user_meta and obj_user_meta.base_meta.meta_type == pyds.NVDS_TRACKER_OBJ_REID_META and obj_user_meta.user_meta_data:
+
+                            reidInd_ptr = ctypes.cast(pyds.get_ptr(obj_user_meta.user_meta_data), ctypes.POINTER(ctypes.c_int32))                
+                            reidInd = reidInd_ptr.contents.value
+
+                            # Check the conditions
+                            if 0 <= reidInd < pReidTensor.numFilled:
+                                features = pReidTensor.ptr_host[reidInd]
+                                features[id] = features.tolist()                    #This will be the Re-ID feature for the obj. id
+                        try:
+                            l_obj = l_obj.next
+                        except StopIteration:
+                            break
+            )doc";
+    
+            static constexpr char* featureSize = R"doc(
+                Each target's ReID vector length.
+            )doc";
+    
+            static constexpr char* numFilled = R"doc(
+                Number of reid vectors in the batch.
+            )doc";
+    
+            static constexpr char* ptr_host = R"doc(
+                ReID vector on CPU.
+            )doc";
+    
+            static constexpr char* ptr_dev = R"doc(
+                ReID vector on GPU.
+            )doc";
+    
+            static constexpr char* priv_data = R"doc(
+                Pointer to internal buffer pool needed by gst pipelines to return buffers.
+            )doc";
+
+            constexpr const char* cast=R"pyds(cast given object/data to :class:`NvDsReidTensorBatch`, call pyds.NvDsReidTensorBatch.cast(data))pyds";
+        }
 
         namespace NvDsTargetMiscDataObjectDoc
         {
